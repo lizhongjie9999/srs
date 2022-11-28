@@ -4,10 +4,31 @@
 
 The changelog for SRS.
 
+<a name="v6-changes"></a>
+
+## SRS 6.0 Changelog
+
+* v6.0, 2022-11-23, Merge [#3275](https://github.com/ossrs/srs/pull/3275): H265: Support HEVC over HTTP-TS. v6.0.4
+* v6.0, 2022-11-23, Merge [#3274](https://github.com/ossrs/srs/pull/3274): H265: Support parse multiple NALUs in a frame. v6.0.3
+* v6.0, 2022-11-22, Merge [#3272](https://github.com/ossrs/srs/pull/3272): H265: Support HEVC over RTMP or HTTP-FLV. v6.0.2
+* v6.0, 2022-11-22, Merge [#3268](https://github.com/ossrs/srs/pull/3268): H265: Update mpegts.js to play HEVC over HTTP-TS/FLV. v6.0.1
+* v6.0, 2022-11-22, Init SRS 6. v6.0.0
+
 <a name="v5-changes"></a>
 
 ## SRS 5.0 Changelog
 
+* v5.0, 2022-11-25, SRT: Support transform tlpkdrop to tlpktdrop. 5.0.98
+* v5.0, 2022-11-25, Config: Add ENV tips for config. 5.0.97
+* v5.0, 2022-11-24, For [#299](https://github.com/ossrs/srs/issues/299), DASH: Fix number mode bug to make it run. 5.0.96
+* v5.0, 2022-11-23, For [#3176](https://github.com/ossrs/srs/pull/3176): GB28181: Error and logging for HEVC. v5.0.95
+* v5.0, 2022-11-22, Merge [#3236](https://github.com/ossrs/srs/pull/3236): Live: Limit cached max frames by gop_cache_max_frames. v5.0.93
+* v5.0, 2022-11-22, Asan: Check libasan and show tips. v5.0.92
+* v5.0, 2022-11-21, Merge [#3264](https://github.com/ossrs/srs/pull/3264): Asan: Try to fix st_memory_leak for asan check. (#3264). v5.0.91
+* v5.0, 2022-11-21, Asan: Fix global ip address leak check. v5.0.90
+* v5.0, 2022-11-20, For [#2532](https://github.com/ossrs/srs/issues/2532): Windows: Support cygwin pipline and packager. v5.0.89
+* v5.0, 2022-11-18, Fix [#3215](https://github.com/ossrs/srs/issues/3215): Callback: Fix bug for response string 0. v5.0.88
+* v5.0, 2022-11-18, For [#2532](https://github.com/ossrs/srs/issues/2532): Windows: Replace ln by cp for windows. v5.0.87
 * v5.0, 2022-10-31, For [#2899](https://github.com/ossrs/srs/issues/2899): Exporter: Add metrics cpu, memory and uname. v5.0.86
 * v5.0, 2022-10-30, Config: Support startting with environment variable only. v5.0.85
 * v5.0, 2022-10-26, Fix [#3218](https://github.com/ossrs/srs/issues/3218): Log: Follow Java/log4j log level specs. v5.0.83
@@ -54,6 +75,7 @@ The changelog for SRS.
 * v5.0, 2022-08-12, Support crossbuild for hisiv500. v5.0.40
 * v5.0, 2022-08-10, Build: Detect OS by packager. v5.0.39
 * v5.0, 2022-08-06, Support MIPS 64bits for loongson 3A4000/3B3000. v5.0.38
+* v5.0, 2022-07-20, Fix [#3115](https://github.com/ossrs/srs/pull/3115): ST: Support RISCV cpu. v5.0.33
 * v5.0, 2022-06-29, Support multiple threads by thread pool. v5.0.32
 * v5.0, 2022-06-28, ST: Support thread-local for multiple threads. v5.0.31
 * v5.0, 2022-06-17, Merge [#3010](https://github.com/ossrs/srs/pull/3010): SRT: Support Coroutine Native SRT over ST. (#3010). v5.0.30
@@ -88,6 +110,7 @@ The changelog for SRS.
 
 ## SRS 4.0 Changelog
 
+* v4.0, 2022-11-22, Pick [#3079](https://github.com/ossrs/srs/issues/3079): WebRTC: Fix no audio and video issue for Firefox. v4.0.268
 * v4.0, 2022-10-10, For [#2901](https://github.com/ossrs/srs/issues/2901): Edge: Fast disconnect and reconnect. v4.0.267
 * v4.0, 2022-09-27, For [#3167](https://github.com/ossrs/srs/issues/3167): WebRTC: Refine sequence jitter algorithm. v4.0.266
 * v4.0, 2022-09-16, For [#3179](https://github.com/ossrs/srs/issues/3179): WebRTC: Make sure the same m-lines order for offer and answer. v4.0.265

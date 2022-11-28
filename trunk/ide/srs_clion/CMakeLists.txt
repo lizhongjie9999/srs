@@ -27,11 +27,11 @@ ProcessorCount(JOBS)
 # We should always configure SRS for switching between branches.
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     EXECUTE_PROCESS(
-        COMMAND ./configure --osx --srt=on --gb28181=on --utest=on --jobs=${JOBS}
+        COMMAND ./configure --osx --srt=on --gb28181=on --h265=on --utest=on --jobs=${JOBS}
         WORKING_DIRECTORY ${SRS_DIR} RESULT_VARIABLE ret)
 ELSE ()
     EXECUTE_PROCESS(
-        COMMAND ./configure --srt=on --gb28181=on --utest=on --jobs=${JOBS}
+        COMMAND ./configure --srt=on --gb28181=on --h265=on --utest=on --jobs=${JOBS}
         WORKING_DIRECTORY ${SRS_DIR} RESULT_VARIABLE ret)
 ENDIF ()
 if(NOT ret EQUAL 0)
@@ -75,7 +75,7 @@ AUX_SOURCE_DIRECTORY(${SRS_DIR}/src/kernel SOURCE_FILES)
 AUX_SOURCE_DIRECTORY(${SRS_DIR}/src/protocol SOURCE_FILES)
 AUX_SOURCE_DIRECTORY(${SRS_DIR}/src/app SOURCE_FILES)
 
-ADD_DEFINITIONS("-g -O0")
+ADD_DEFINITIONS("-g -O0 -fsanitize=address -fno-omit-frame-pointer")
 
 ###########################################################
 # Setup SRS project
@@ -88,6 +88,7 @@ TARGET_LINK_LIBRARIES(srs dl)
 TARGET_LINK_LIBRARIES(srs ${DEPS_LIBS})
 TARGET_LINK_LIBRARIES(srs -ldl -pthread)
 TARGET_LINK_LIBRARIES(srs -rdynamic)
+TARGET_LINK_LIBRARIES(srs -fsanitize=address -fno-omit-frame-pointer)
 
 ###########################################################
 # For utest.
@@ -105,8 +106,9 @@ TARGET_LINK_LIBRARIES(utest gtest gtest_main)
 TARGET_LINK_LIBRARIES(utest dl)
 TARGET_LINK_LIBRARIES(utest ${DEPS_LIBS})
 TARGET_LINK_LIBRARIES(utest -ldl -pthread)
+TARGET_LINK_LIBRARIES(utest -fsanitize=address -fno-omit-frame-pointer)
 
 ###########################################################
 # Done
-MESSAGE(STATUS "@see https://ossrs.net/lts/zh-cn/docs/v4/doc/ide")
+MESSAGE(STATUS "@see https://ossrs.net/lts/zh-cn/docs/v5/doc/ide")
 

@@ -575,6 +575,7 @@ SrsGopCache::SrsGopCache()
     cached_video_count = 0;
     enable_gop_cache = true;
     audio_after_last_video_count = 0;
+    gop_cache_max_frames_ = 0;
 }
 
 SrsGopCache::~SrsGopCache()
@@ -597,6 +598,11 @@ void SrsGopCache::set(bool v)
     }
 }
 
+void SrsGopCache::set_gop_cache_max_frames(int v)
+{
+    gop_cache_max_frames_ = v;
+}
+
 bool SrsGopCache::enabled()
 {
     return enable_gop_cache;
@@ -615,11 +621,13 @@ srs_error_t SrsGopCache::cache(SrsSharedPtrMessage* shared_msg)
     
     // got video, update the video count if acceptable
     if (msg->is_video()) {
-        // drop video when not h.264
-        if (!SrsFlvVideo::h264(msg->payload, msg->size)) {
-            return err;
-        }
-        
+        // Drop video when not h.264 or h.265.
+        bool codec_ok = SrsFlvVideo::h264(msg->payload, msg->size);
+#ifdef SRS_H265
+        codec_ok = codec_ok ? : SrsFlvVideo::hevc(msg->payload, msg->size);
+#endif
+        if (!codec_ok) return err;
+
         cached_video_count++;
         audio_after_last_video_count = 0;
     }
@@ -648,10 +656,17 @@ srs_error_t SrsGopCache::cache(SrsSharedPtrMessage* shared_msg)
         // curent msg is video frame, so we set to 1.
         cached_video_count = 1;
     }
-    
+
     // cache the frame.
     gop_cache.push_back(msg->copy());
-    
+
+    // Clear gop cache if exceed the max frames.
+    if (gop_cache.size() > (size_t)gop_cache_max_frames_) {
+        srs_warn("Gop cache exceed max frames=%d, total=%d, videos=%d, aalvc=%d",
+            gop_cache_max_frames_, (int)gop_cache.size(), cached_video_count, audio_after_last_video_count);
+        clear();
+    }
+
     return err;
 }
 
@@ -880,8 +895,7 @@ srs_error_t SrsOriginHub::initialize(SrsLiveSource* s, SrsRequest* r)
 void SrsOriginHub::dispose()
 {
     hls->dispose();
-    
-    // TODO: Support dispose DASH.
+    dash->dispose();
 }
 
 srs_error_t SrsOriginHub::cycle()
@@ -892,7 +906,9 @@ srs_error_t SrsOriginHub::cycle()
         return srs_error_wrap(err, "hls cycle");
     }
     
-    // TODO: Support cycle DASH.
+    if ((err = dash->cycle()) != srs_success) {
+        return srs_error_wrap(err, "dash cycle");
+    }
     
     return err;
 }
@@ -1050,14 +1066,22 @@ srs_error_t SrsOriginHub::on_video(SrsSharedPtrMessage* shared_video, bool is_se
         
         // when got video stream info.
         SrsStatistic* stat = SrsStatistic::instance();
-        if ((err = stat->on_video_info(req_, SrsVideoCodecIdAVC, c->avc_profile, c->avc_level, c->width, c->height)) != srs_success) {
+
+        if (c->id == SrsVideoCodecIdAVC) {
+            err = stat->on_video_info(req_, c->id, c->avc_profile, c->avc_level, c->width, c->height);
+            srs_trace("%dB video sh, codec(%d, profile=%s, level=%s, %dx%d, %dkbps, %.1ffps, %.1fs)",
+                msg->size, c->id, srs_avc_profile2str(c->avc_profile).c_str(), srs_avc_level2str(c->avc_level).c_str(),
+                c->width, c->height, c->video_data_rate / 1000, c->frame_rate, c->duration);
+#ifdef SRS_H265
+        } else if (c->id == SrsVideoCodecIdHEVC) {
+            // TODO: FIXME: Use the correct information for HEVC.
+            err = stat->on_video_info(req_, c->id, c->avc_profile, c->avc_level, c->width, c->height);
+            srs_trace("%dB video sh, codec(%d)", msg->size, c->id);
+#endif
+        }
+        if (err != srs_success) {
             return srs_error_wrap(err, "stat video");
         }
-        
-        srs_trace("%dB video sh,  codec(%d, profile=%s, level=%s, %dx%d, %dkbps, %.1ffps, %.1fs)",
-                  msg->size, c->id, srs_avc_profile2str(c->avc_profile).c_str(),
-                  srs_avc_level2str(c->avc_level).c_str(), c->width, c->height,
-                  c->video_data_rate / 1000, c->frame_rate, c->duration);
     }
 
     // Ignore video data when no sps/pps
@@ -2086,6 +2110,7 @@ srs_error_t SrsLiveSource::on_reload_vhost_play(string vhost)
             string url = req->get_stream_url();
             srs_trace("vhost %s gop_cache changed to %d, source url=%s", vhost.c_str(), v, url.c_str());
             gop_cache->set(v);
+            gop_cache->set_gop_cache_max_frames(_srs_config->get_gop_cache_max_frames(vhost));
         }
     }
     
@@ -2723,6 +2748,11 @@ void SrsLiveSource::on_consumer_destroy(SrsLiveConsumer* consumer)
 void SrsLiveSource::set_cache(bool enabled)
 {
     gop_cache->set(enabled);
+}
+
+void SrsLiveSource::set_gop_cache_max_frames(int v)
+{
+    gop_cache->set_gop_cache_max_frames(v);
 }
 
 SrsRtmpJitterAlgorithm SrsLiveSource::jitter()

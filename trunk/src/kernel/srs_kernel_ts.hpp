@@ -131,6 +131,8 @@ enum SrsTsStream
     // ITU-T Rec. H.222.0 | ISO/IEC 13818-1 Reserved
     // 0x15-0x7F
     SrsTsStreamVideoH264 = 0x1b,
+    // For HEVC(H.265).
+    SrsTsStreamVideoHEVC = 0x24,
     // User Private
     // 0x80-0xFF
     SrsTsStreamAudioAC3 = 0x81,
@@ -1272,8 +1274,9 @@ public:
     // Write a video frame to ts,
     virtual srs_error_t write_video(SrsTsMessage* video);
 public:
-    // get the video codec of ts muxer.
+    // Get or update the video codec of ts muxer.
     virtual SrsVideoCodecId video_codec();
+    virtual void update_video_codec(SrsVideoCodecId v);
 };
 
 // Used for HLS Encryption
@@ -1315,6 +1318,9 @@ private:
     virtual srs_error_t do_cache_mp3(SrsAudioFrame* frame);
     virtual srs_error_t do_cache_aac(SrsAudioFrame* frame);
     virtual srs_error_t do_cache_avc(SrsVideoFrame* frame);
+#ifdef SRS_H265
+    virtual srs_error_t do_cache_hevc(SrsVideoFrame* frame);
+#endif
 };
 
 // Transmux the RTMP stream to HTTP-TS stream.

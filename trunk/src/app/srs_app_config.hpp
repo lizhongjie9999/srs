@@ -553,6 +553,8 @@ public:
     // @return true when gop_cache is ok; otherwise, false.
     // @remark, default true.
     virtual bool get_gop_cache(std::string vhost);
+    // Get the limit max frames for gop cache.
+    virtual int get_gop_cache_max_frames(std::string vhost);
     // Whether debug_srs_upnode is enabled of vhost.
     // debug_srs_upnode is very important feature for tracable log,
     // but some server, for instance, flussonic donot support it.
@@ -894,6 +896,12 @@ public:
     virtual std::string get_dash_path(std::string vhost);
     // Get the path for DASH MPD, to generate the MPD file.
     virtual std::string get_dash_mpd_file(std::string vhost);
+    // Get the number of fragments in MPD file.
+    virtual int get_dash_window_size(std::string vhost);
+    // Whether cleanup the old m4s files.
+    virtual bool get_dash_cleanup(std::string vhost);
+    // The timeout in srs_utime_t to dispose the dash.
+    virtual srs_utime_t get_dash_dispose(std::string vhost);
 // hls section
 private:
     // Get the hls directive of vhost.

@@ -101,6 +101,7 @@
     XX(ERROR_APM_ENDPOINT                  , 1088, "ApmEndpoint", "APM endpoint is invalid") \
     XX(ERROR_APM_AUTH                      , 1089, "ApmAuth", "APM team or token is invalid") \
     XX(ERROR_EXPORTER_DISABLED             , 1090, "ExporterDisable", "Prometheus exporter is disabled") \
+    XX(ERROR_ST_SET_SELECT                 , 1091, "StSetSelect", "ST set select failed") \
 
 /**************************************************/
 /* RTMP protocol error. */
@@ -265,7 +266,8 @@
     XX(ERROR_INOTIFY_OPENFD                , 3094, "InotifyOpenFd", "Failed to open inotify fd for config listener") \
     XX(ERROR_INOTIFY_WATCH                 , 3095, "InotfyWatch", "Failed to watch inotify for config listener") \
     XX(ERROR_HTTP_URL_UNESCAPE             , 3096, "HttpUrlUnescape", "Failed to unescape URL for HTTP") \
-    XX(ERROR_HTTP_WITH_BODY                , 3097, "HttpWithBody", "Failed for HTTP body")
+    XX(ERROR_HTTP_WITH_BODY                , 3097, "HttpWithBody", "Failed for HTTP body") \
+    XX(ERROR_HEVC_DISABLED                 , 3098, "HevcDisabled", "HEVC is disabled")
 
 /**************************************************/
 /* HTTP/StreamConverter protocol error. */

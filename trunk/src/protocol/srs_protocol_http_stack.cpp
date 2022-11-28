@@ -461,8 +461,7 @@ srs_error_t SrsHttpFileServer::serve_file(ISrsHttpResponseWriter* w, ISrsHttpMes
         _mime[".jpg"] = "image/jpeg";
         _mime[".gif"] = "image/gif";
         // For MPEG-DASH.
-        //_mime[".mpd"] = "application/dash+xml";
-        _mime[".mpd"] = "text/xml";
+        _mime[".mpd"] = "application/dash+xml";
         _mime[".m4s"] = "video/iso.segment";
         _mime[".mp4v"] = "video/mp4";
     }
@@ -689,12 +688,14 @@ srs_error_t SrsHttpServeMux::handle(std::string pattern, ISrsHttpHandler* handle
     srs_assert(handler);
     
     if (pattern.empty()) {
+        srs_freep(handler);
         return srs_error_new(ERROR_HTTP_PATTERN_EMPTY, "empty pattern");
     }
     
     if (entries.find(pattern) != entries.end()) {
         SrsHttpMuxEntry* exists = entries[pattern];
         if (exists->explicit_match) {
+            srs_freep(handler);
             return srs_error_new(ERROR_HTTP_PATTERN_DUPLICATED, "pattern=%s exists", pattern.c_str());
         }
     }
